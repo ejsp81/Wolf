@@ -39,12 +39,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="240dp">
 
-                <ImageView
-                    android:id="@+id/imageView"
+                <include
+                    layout="@layout/logo"
                     android:layout_width="match_parent"
-                    android:layout_height="208dp"
-                    android:layout_centerInParent="true"
-                    app:srcCompat="@drawable/colorpn" />
+                    android:layout_height="match_parent" />
             </RelativeLayout>
 
             <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -69,7 +67,7 @@
                             android:inputType="textAutoComplete"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:text="Elvis" />
+                            android:text="Elvis Jose" />
 
                     </android.support.design.widget.TextInputLayout>
 

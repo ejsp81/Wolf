@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class JSONParser {
@@ -44,6 +45,11 @@ public class JSONParser {
                 HttpPost httpPost = new HttpPost(url);
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
                 HttpResponse httpResponse = httpClient.execute(httpPost);
+                System.out.println("==============================="+ httpResponse.getStatusLine().getStatusCode());
+                System.out.println("----"+ HttpURLConnection.HTTP_OK);
+                if (httpResponse.getStatusLine().getStatusCode()==HttpURLConnection.HTTP_OK){
+
+                }
                 HttpEntity httpEntity = httpResponse.getEntity();
                 is = httpEntity.getContent();
             }else if(method == "GET"){
@@ -70,7 +76,9 @@ public class JSONParser {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
+                System.out.println("######"+line);
             }
+
             is.close();
             json = sb.toString();
         } catch (Exception e) {

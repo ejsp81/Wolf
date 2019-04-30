@@ -31,21 +31,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.wolf.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     JSONParser jsonparser = new JSONParser();
     //String ip="192.168.1.64";
-    String resultado="";
     Button btnIngresar;
 
     private EditText txtIp;
@@ -110,18 +98,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
         /**
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
+         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+         mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        @Override public void onClick(View view) {
+        attemptLogin();
+        }
         });*/
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        btnIngresar=(Button) findViewById(R.id.email_sign_in_button);
+        btnIngresar = (Button) findViewById(R.id.email_sign_in_button);
         btnIngresar.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -132,8 +119,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
     }
 
-    public void registro(View v){
-        Varios.ip=txtIp.getText().toString();
+    public void registro(View v) {
+        Varios.ip = txtIp.getText().toString();
         Intent intent = new Intent(this, Registro.class);
         startActivity(intent);
 
@@ -193,7 +180,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (mAuthTask != null) {
             return;
         }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -206,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !Validaciones.validaPassword(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -217,7 +203,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!Validaciones.validaEmail(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -236,15 +222,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
-    }
 
     /**
      * Shows the progress UI and hides the login form.
@@ -393,70 +370,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
-    private void mostrarPersona(final String  data,final View view) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                System.out.println("********************    "+data);
-
-                if (!data.equalsIgnoreCase("")) {
-                    JSONObject json;
-                    try {
-                        String d=data.trim();
-                        if (d.equals("no found")){
-                            Toast.makeText(LoginActivity.this,
-                                    "El email y/o contraseñas con incorrectos ", Toast.LENGTH_LONG)
-                                    .show();
-                            System.out.println("no seconecto");
-                        }else{
-                            json = new JSONObject(data);
-                            JSONArray jsonArray = json.optJSONArray("user");
-                            JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
-                            String nombre=jsonArrayChild.optString("usua_primer_nombre");
-                            String apellido=jsonArrayChild.optString("usua_primer_apellido");
-                            Toast.makeText(LoginActivity.this,
-                                    "Bienvenido "+nombre+" "+apellido, Toast.LENGTH_LONG)
-                                    .show();
-                            lanzar2(view);
-
-
-                            System.out.println("se conecto");
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-    public void lanzar2(View view){
-        Intent intent = new Intent(this, MenuPrincincipal.class);
-        startActivity(intent);
-    }
-    private String convertStreamToString(InputStream is) throws IOException {
-        if (is != null) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(is, "UTF-8"));
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-            } finally {
-                is.close();
-            }
-            return sb.toString();
-        } else {
-            return "";
-        }
-    }
-
     class IniciaSesion extends AsyncTask<String, String, String> {
+        TransBD tb = new TransBD();
+        boolean conexion = true;
 
         @Override
         protected void onPreExecute() {
@@ -465,39 +381,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected String doInBackground(String... arg0) {
-            String data="";
+            String data = "";
+            Varios.ip = txtIp.getText().toString();
+            String url="http://" + Varios.ip + "/TransBD/transBDUsuarios.php";
             try {
+                tb.llenaTreeMap("usua_email", mEmailView.getText().toString());
+                tb.llenaTreeMap("usua_password", mPasswordView.getText().toString());
+                tb.llenaTreeMap("transaccion", "validaUser");
 
-                Varios.ip=txtIp.getText().toString();
-                URL url = new URL("http://"+Varios.ip+"/TransBD/transBDUsuarios.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                //HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("usua_email", mEmailView.getText().toString())
-                        .appendQueryParameter("usua_password", mPasswordView.getText().toString())
-                        .appendQueryParameter("transaccion", "validaUser");
-                String query = builder.build().getEncodedQuery();
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-                InputStream is = null;
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    is = conn.getInputStream();
-                    data = convertStreamToString(is);
-                    //View view=null;
-                    //mostrarPersona(data,view);
+
+                if (!tb.buildQueryURL(url,"POST")) {
+                    conexion = false;
+                } else {
+                    data = tb.resultadoBDURL();
                 }
+
             } catch (Exception e) {
+                conexion = false;
                 e.printStackTrace();
             }
             return data;
@@ -505,31 +405,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onPostExecute(String result) {
+            if (!conexion) {
+                Toast.makeText(LoginActivity.this,
+                        "No se encuentra la ruta en el servidor", Toast.LENGTH_LONG)
+                        .show();
+                return;
+            }
+            if (result.trim().equals("faild")) {
+                Toast.makeText(LoginActivity.this,
+                        "No fue posible la conexion con la base de datos", Toast.LENGTH_LONG)
+                        .show();
+                return;
+            }
+            System.out.println("hello");
             if (!result.equalsIgnoreCase("")) {
-                JSONObject json;
                 try {
-                    String d=result.trim();
-                    if (d.equals("no found")){
+                    String d = result.trim();
+                    if (d.equals("no found")) {
                         Toast.makeText(LoginActivity.this,
                                 "El email y/o contraseñas con incorrectos ", Toast.LENGTH_LONG)
                                 .show();
-                        System.out.println("no seconecto");
-                    }else{
-                        json = new JSONObject(result);
-                        JSONArray jsonArray = json.optJSONArray("user");
+                    } else {
+                        //JSONObject json = Varios.retornaJason(result);
+                        JSONArray jsonArray = Varios.retornaJason(result).optJSONArray("user");
                         JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
-                        String nombre=jsonArrayChild.optString("usua_primer_nombre");
-                        String apellido=jsonArrayChild.optString("usua_primer_apellido");
+                        String nombre = jsonArrayChild.optString("usua_primer_nombre");
+                        String apellido = jsonArrayChild.optString("usua_primer_apellido");
                         Toast.makeText(LoginActivity.this,
-                                "Bienvenido "+nombre+" "+apellido, Toast.LENGTH_LONG)
+                                "Bienvenido " + nombre + " " + apellido, Toast.LENGTH_LONG)
                                 .show();
                         Intent intent = new Intent(LoginActivity.this, MenuPrincincipal.class);
-                        intent.putExtra("pNombre",nombre);
-                        intent.putExtra("pApellido",apellido);
+                        intent.putExtra("pNombre", nombre);
+                        intent.putExtra("pApellido", apellido);
                         startActivity(intent);
                         System.out.println("se conecto");
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

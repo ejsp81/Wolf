@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.wolf.R;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -26,7 +24,6 @@ public class Registro extends AppCompatActivity {
     private AutoCompleteTextView txtPrimerNombre,txtSegundoNombre,txtPrimerApellido,txtSegundoApellido,txtEmail;
     private EditText txtPassword,txtConfirmarPassword;
     ProgressDialog dialogo;
-    JSONParser jsonparser = new JSONParser();
     Button btnInsertar;
 
     @Override
@@ -47,7 +44,7 @@ public class Registro extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
-                new CrearProducto().execute();
+                new CrearUsuario().execute();
 
             }
         });
@@ -56,7 +53,9 @@ public class Registro extends AppCompatActivity {
 
 
 
-    class CrearProducto extends AsyncTask<String, String, String> {
+    class CrearUsuario extends AsyncTask<String, String, String> {
+        TransBD tb = new TransBD();
+        boolean conexion=true;
 
         JSONObject json=null;
 
@@ -83,28 +82,48 @@ public class Registro extends AppCompatActivity {
             String sApellido = txtSegundoApellido.getText().toString();
             String email = txtEmail.getText().toString();
             String pass = txtPassword.getText().toString();
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("transaccion", "insertaUsuario"));
-            params.add(new BasicNameValuePair("pNombre", pNombre));
-            params.add(new BasicNameValuePair("sNombre", sNombre));
-            params.add(new BasicNameValuePair("pApellido", pApellido));
-            params.add(new BasicNameValuePair("sApellido", sApellido));
-            params.add(new BasicNameValuePair("email", email));
-            params.add(new BasicNameValuePair("pass", pass));
 
-            json = jsonparser.makeHttpRequest(url, "POST", params);
+            tb.llenaTreeMap("transaccion", "insertaUsuario");
+            tb.llenaTreeMap("pNombre", pNombre);
+            tb.llenaTreeMap("sNombre", sNombre);
+            tb.llenaTreeMap("pApellido", pApellido);
+            tb.llenaTreeMap("sApellido", sApellido);
+            tb.llenaTreeMap("email", email);
+            tb.llenaTreeMap("pass", pass);
 
+            if (!tb.buildHTTP(url, "POST")){
+                conexion=false;
+            }else{
+                mensaje=tb.resultadoBDHTTP();
+                json=Varios.retornaJason(mensaje);
+            }
             return mensaje;
         }
 
         @Override
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
+            if (!conexion) {
+                Toast.makeText(Registro.this,
+                        "No se encuentra la ruta en el servidor", Toast.LENGTH_LONG)
+                        .show();
+                dialogo.dismiss();
+                btnInsertar.setEnabled(true);
+                return;
+            }
+            if (result.trim().equals("faild")) {
+                Toast.makeText(Registro.this,
+                        "No fue posible la conexion con la base de datos", Toast.LENGTH_LONG)
+                        .show();
+                dialogo.dismiss();
+                btnInsertar.setEnabled(true);
+                return;
+            }
             btnInsertar.setEnabled(true);
             String tag = "success";
             try {
                 if (!json.get("faild").equals("not")){
-                    if (json.get("faild").equals("23000")) {
+                    if (json.get("faild").equals("23000")) {//valida si hay doble registro
                         Toast.makeText(Registro.this, "El correo digitado ya se encuentra en la base de datos", Toast.LENGTH_SHORT).show();
                     }
                 }else{
