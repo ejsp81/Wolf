@@ -13,15 +13,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.wolf.LoginActivity">
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
+    <!-- TODO: Update blank fragment layout -->
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
@@ -60,31 +52,13 @@
 
                         <AutoCompleteTextView
                             android:id="@+id/txtPrimerNombre"
-                            android:layout_width="187dp"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:drawableLeft="@drawable/ic_nombre"
                             android:hint="Primer Nombre"
                             android:inputType="textAutoComplete"
                             android:maxLines="1"
-                            android:singleLine="true"
-                            android:text="Elvis Jose" />
-
-                    </android.support.design.widget.TextInputLayout>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/txtSegundoNombre"
-                            android:layout_width="178dp"
-                            android:layout_height="wrap_content"
-                            android:drawableLeft="@drawable/ic_nombre"
-                            android:hint="Segundo Nombre"
-                            android:inputType="textAutoComplete"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:text="Jose" />
+                            android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -104,28 +78,13 @@
                             android:hint="Primer Apellido"
                             android:inputType="textAutoComplete"
                             android:maxLines="1"
-                            android:singleLine="true"
-                            android:text="Sanchez" />
+                            android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/txtSegundoApellido"
-                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
-                            android:layout_width="178dp"
-                            android:layout_height="wrap_content"
-                            android:drawableLeft="@drawable/ic_nombre"
-                            android:hint="Segundo Apellido"
-                            android:inputType="textAutoComplete"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:text="Pineda" />
-
-                    </android.support.design.widget.TextInputLayout>
+                        android:layout_height="match_parent"/>
 
                 </TableRow>
 
@@ -217,11 +176,11 @@
                 android:layout_marginTop="4dip"
                 android:layout_marginBottom="40dip"
                 android:gravity="center"
-
                 android:text="Cancelar"
                 android:textColor="#0b84aa"
                 android:textSize="20dip" />
 
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

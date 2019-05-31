@@ -71,6 +71,13 @@ public class Registro extends AppCompatActivity {
             super.onPreExecute();
         }
 
+
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
         @Override
         protected String doInBackground(String... arg0) {
             String mensaje="";

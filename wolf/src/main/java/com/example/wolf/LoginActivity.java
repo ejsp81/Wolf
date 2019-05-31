@@ -3,8 +3,11 @@ package com.example.wolf;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,10 +35,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     Button btnIngresar;
 
     private EditText txtIp;
+    private static ConnectivityManager manager;
 
 
     @Override
@@ -97,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
         /**
          Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
          mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -114,9 +125,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
+                //Intent intent = new Intent(LoginActivity.this, MenuPrincincipal.class);
+                //startActivity(intent);
                 new IniciaSesion().execute();
             }
         });
+
+        if (isOnline(this)){
+            System.out.println("Haaaaaaaaaaaaaaaaaaaaaaaay una conexion");
+        }
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        System.out.println("Tipo: "+networkInfo.getType());
+        System.out.println("Info Extra: "+networkInfo.getExtraInfo());
+        System.out.println("Tiponame: "+networkInfo.getSubtypeName());
+        System.out.println("Estado: "+networkInfo.getState());
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+
     }
 
     public void registro(View v) {
@@ -381,6 +411,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected String doInBackground(String... arg0) {
+            if (!Varios.verivicaConexion(LoginActivity.this)){
+                publishProgress();
+            }
             String data = "";
             Varios.ip = txtIp.getText().toString();
             String url="http://" + Varios.ip + "/TransBD/transBDUsuarios.php";
@@ -388,8 +421,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 tb.llenaTreeMap("usua_email", mEmailView.getText().toString());
                 tb.llenaTreeMap("usua_password", mPasswordView.getText().toString());
                 tb.llenaTreeMap("transaccion", "validaUser");
-
-
                 if (!tb.buildQueryURL(url,"POST")) {
                     conexion = false;
                 } else {
@@ -417,7 +448,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         .show();
                 return;
             }
-            System.out.println("hello");
             if (!result.equalsIgnoreCase("")) {
                 try {
                     String d = result.trim();
@@ -428,15 +458,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     } else {
                         //JSONObject json = Varios.retornaJason(result);
                         JSONArray jsonArray = Varios.retornaJason(result).optJSONArray("user");
+                        System.out.println(jsonArray);
                         JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
-                        String nombre = jsonArrayChild.optString("usua_primer_nombre");
-                        String apellido = jsonArrayChild.optString("usua_primer_apellido");
+                        String pNombre = jsonArrayChild.optString("usua_primer_nombre");
+                        String sNombre = jsonArrayChild.optString("usua_segundo_nombre");
+                        String pApellido = jsonArrayChild.optString("usua_primer_apellido");
+                        String sApellido = jsonArrayChild.optString("usua_segundo_apellido");
+                        String email = jsonArrayChild.optString("usua_email");
+                        String id = jsonArrayChild.optString("usua_id");
+                        String pass = jsonArrayChild.optString("usua_password");
+
+                        Varios.usuarioLogueado=new Usuario(Integer.parseInt(id),email,pNombre,sNombre,pApellido,sApellido,pass);
+
+                        Gson gson = new Gson();
+                        Type type = new TypeToken<List<Usuario>>(){}.getType();
+                        List<Usuario> contactList = gson.fromJson(jsonArray.toString(),type);
+                        for (Usuario contact : contactList){
+                            Log.i("Usuario", contact.usua_id + "-" + contact.usua_email + "-" );
+                            System.out.println("------------------------------------------------------------------------------------------");
+                            //LatLng miubicacion = new LatLng(contact.ubic_latitud, contact.ubic_longitud);
+                            // mMap.addMarker(new MarkerOptions().position(miubicacion).title("Santiago de Cali"));
+                        }
+
                         Toast.makeText(LoginActivity.this,
-                                "Bienvenido " + nombre + " " + apellido, Toast.LENGTH_LONG)
+                                "Bienvenido " + pNombre + " " + pApellido, Toast.LENGTH_LONG)
                                 .show();
                         Intent intent = new Intent(LoginActivity.this, MenuPrincincipal.class);
-                        intent.putExtra("pNombre", nombre);
-                        intent.putExtra("pApellido", apellido);
+                        intent.putExtra("pNombre", pNombre);
+                        intent.putExtra("pApellido", pApellido);
                         startActivity(intent);
                         System.out.println("se conecto");
                     }
@@ -445,7 +494,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
         }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            Toast.makeText(LoginActivity.this,
+                    "No hay Conexion a Internet", Toast.LENGTH_LONG)
+                    .show();
+            cancel(true);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
     }
+
 
 }
 

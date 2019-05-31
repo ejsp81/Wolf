@@ -1,8 +1,19 @@
 package com.example.wolf;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,13 +25,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.example.wolf.R;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MenuPrincincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView txtNombre;
 
+    static final int MY_PERMISSIONS_REQUEST_ACCES_FINE_LOCATION=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,17 +57,32 @@ public class MenuPrincincipal extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //con esto generamos el usuario en el header del menu-------------------------------
         View hView = navigationView.getHeaderView(0);
-
         txtNombre=(TextView) hView.findViewById(R.id.textView);
         String nombre=getIntent().getStringExtra("pNombre")+" "+getIntent().getStringExtra("pApellido");
         System.out.println(nombre);
 
         txtNombre.setText(nombre);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MenuPrincincipal.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCES_FINE_LOCATION);
+            return;
+        }
+    }
+    @Override
+    public void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 
     @Override
@@ -93,9 +123,39 @@ public class MenuPrincincipal extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        // Creamos un nuevo Bundle
+        //Una vez haz creado tu instancia de TestFragment y colocado el Bundle entre sus argumentos, usas el FragmentManager para iniciarla desde tu segunda actividad.
+        //FragmentManager fm = getFragmentManager();
+
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_gallery) {
+
+            //fm.beginTransaction().replace(R.id.escenario,new MapsFragment()).commit();
+            //local=new Localizacion(MenuPrincincipal.this);
+            //System.out.println("¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡"+local.getDireccion());
+
+
+
+            //Bundle args = new Bundle();
+            //args.putSerializable("local",local);
+
+            // Colocamos el String
+            //args.putString("latitud", Varios.latitud+"");
+            //args.putString("longitud", Varios.longitud+"");
+            //args.putString("ciudad", ciudad);
+            Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.escenario);
+            if (mFragment instanceof MapsFragment) {
+            }else{
+                FragmentManager fm = getSupportFragmentManager();
+
+                // Supongamos que tu Fragment se llama TestFragment. Colocamos este nuevo Bundle como argumento en el fragmento.
+                MapsFragment newFragment = new MapsFragment();
+                //newFragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.escenario, newFragment);
+                fragmentTransaction.commit();
+            }
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -111,4 +171,24 @@ public class MenuPrincincipal extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void setLocation(Location loc){
+        if (loc.getLongitude()!=0.0 && loc.getLongitude()!=0.0){
+            Varios.latitud=loc.getLatitude();
+            Varios.longitud=loc.getLongitude();
+            try{
+                Geocoder geocoder=new Geocoder(this, Locale.getDefault());
+                List<Address> direcciones=geocoder.getFromLocation(Varios.latitud,Varios.longitud,1);
+                if (!direcciones.isEmpty()){
+                    Address dir=direcciones.get(0);
+                    //direccion=dir.getAddressLine(0)+" Ciudad "+dir.getLocality();
+                    //ciudad=dir.getLocality()+" "+direccion;
+                }
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }
