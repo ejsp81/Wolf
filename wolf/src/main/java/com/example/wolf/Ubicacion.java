@@ -2,25 +2,28 @@ package com.example.wolf;
 
 public class Ubicacion {
     public int ubic_id;
-    public double ubic_longitud;
     public double ubic_latitud;
+    public double ubic_longitud;
+    public double ubic_hora_conexion;
     public int ubic_estado;
-    public int ubic_usua_id;
+    public int ubic_mote_id;
 
-    public Ubicacion(int ubic_id, double ubic_longitud, double ubic_latitud, int ubic_estado, int ubic_usua_id) {
+    public Ubicacion(int ubic_id, double ubic_latitud, double ubic_longitud, double ubic_hora_conexion, int ubic_estado, int ubic_mote_id) {
         this.ubic_id = ubic_id;
-        this.ubic_longitud = ubic_longitud;
         this.ubic_latitud = ubic_latitud;
+        this.ubic_longitud = ubic_longitud;
+        this.ubic_hora_conexion = ubic_hora_conexion;
         this.ubic_estado = ubic_estado;
-        this.ubic_usua_id = ubic_usua_id;
+        this.ubic_mote_id = ubic_mote_id;
     }
 
     public Ubicacion() {
         this.ubic_id = 0;
-        this.ubic_longitud = 0;
-        this.ubic_latitud = 0;
+        this.ubic_latitud = 0.0;
+        this.ubic_longitud = 0.0;
+        this.ubic_hora_conexion = 0.0;
         this.ubic_estado = 0;
-        this.ubic_usua_id = 0;
+        this.ubic_mote_id = 0;
     }
 
     public int getUbic_id() {
@@ -31,6 +34,14 @@ public class Ubicacion {
         this.ubic_id = ubic_id;
     }
 
+    public double getUbic_latitud() {
+        return ubic_latitud;
+    }
+
+    public void setUbic_latitud(double ubic_latitud) {
+        this.ubic_latitud = ubic_latitud;
+    }
+
     public double getUbic_longitud() {
         return ubic_longitud;
     }
@@ -39,12 +50,12 @@ public class Ubicacion {
         this.ubic_longitud = ubic_longitud;
     }
 
-    public double getUbic_latitud() {
-        return ubic_latitud;
+    public double getUbic_hora_conexion() {
+        return ubic_hora_conexion;
     }
 
-    public void setUbic_latitud(double ubic_latitud) {
-        this.ubic_latitud = ubic_latitud;
+    public void setUbic_hora_conexion(double ubic_hora_conexion) {
+        this.ubic_hora_conexion = ubic_hora_conexion;
     }
 
     public int getUbic_estado() {
@@ -55,22 +66,11 @@ public class Ubicacion {
         this.ubic_estado = ubic_estado;
     }
 
-    public int getUbic_usua_id() {
-        return ubic_usua_id;
+    public int getUbic_mote_id() {
+        return ubic_mote_id;
     }
 
-    public void setUbic_usua_id(int ubic_usua_id) {
-        this.ubic_usua_id = ubic_usua_id;
-    }
-
-    @Override
-    public String toString() {
-        return "Ubicacion{" +
-                "ubic_id=" + ubic_id +
-                ", ubic_longitud=" + ubic_longitud +
-                ", ubic_latitud=" + ubic_latitud +
-                ", ubic_estado=" + ubic_estado +
-                ", ubic_usua_id=" + ubic_usua_id +
-                '}';
+    public void setUbic_mote_id(int ubic_mote_id) {
+        this.ubic_mote_id = ubic_mote_id;
     }
 }
