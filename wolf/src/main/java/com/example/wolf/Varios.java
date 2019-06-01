@@ -21,9 +21,9 @@ import java.util.List;
 public class Varios {
 
     public static String ip="10.10.33.148";
-    public static Usuario usuarioLogueado;
+    public static Motero usuarioLogueado;
     public static List<Ubicacion> ubicacionList=null;
-    public static List<Usuario> usuarioList=null;
+    public static List<Motero> usuarioList=null;
     public static double latitud,longitud;
     public static NetworkInfo networkInfo;
 

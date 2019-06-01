@@ -36,138 +36,161 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </RelativeLayout>
-
-            <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/formulario"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:stretchColumns="2"
-                android:focusable="false"
-                android:focusableInTouchMode="true">
-                <TableRow>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/txtPrimerNombre"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:drawableLeft="@drawable/ic_nombre"
-                            android:hint="Primer Nombre"
-                            android:inputType="textAutoComplete"
-                            android:maxLines="1"
-                            android:singleLine="true" />
-
-                    </android.support.design.widget.TextInputLayout>
-
-                </TableRow>
-
-                <TableRow>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/txtPrimerApellido"
-                            android:layout_width="187dp"
-                            android:layout_height="match_parent"
-                            android:drawableLeft="@drawable/ic_nombre"
-                            android:hint="Primer Apellido"
-                            android:inputType="textAutoComplete"
-                            android:maxLines="1"
-                            android:singleLine="true" />
-
-                    </android.support.design.widget.TextInputLayout>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"/>
-
-                </TableRow>
-
-
-            </TableLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <AutoCompleteTextView
-                    android:id="@+id/txtEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_email"
-                    android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="ejsp82@hotmail.com" />
-
-            </android.support.design.widget.TextInputLayout>
-
-
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true">
+                android:orientation="vertical">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <EditText
-                    android:id="@+id/txtPassword"
+                    <AutoCompleteTextView
+                        android:id="@+id/txtNombres"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@drawable/ic_nombre"
+                        android:hint="Nombres"
+                        android:inputType="textAutoComplete"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/txtApellidos"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@drawable/ic_nombre"
+                        android:hint="Apellidos"
+                        android:inputType="textAutoComplete"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_password"
-                    android:drawableLeft="@drawable/ic_password"
-                    android:hint="@string/prompt_password"
-                    android:imeActionId="6"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="coto" />
+                    app:passwordToggleEnabled="true">
 
-            </android.support.design.widget.TextInputLayout>
+                    <EditText
+                        android:id="@+id/txtCelu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@mipmap/ic_celular"
+                        android:hint="Celular"
+                        android:imeActionId="6"
+                        android:imeActionLabel="@string/action_sign_in_short"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        android:singleLine="true" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true">
+                </android.support.design.widget.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/txtConfirmarPassword"
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/txtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_email"
+                        android:hint="@string/prompt_email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_confirmar_password"
-                    android:drawableLeft="@drawable/ic_confirmar_password"
-                    android:hint="Confirmar Contraseña"
-                    android:imeActionId="6"
-                    android:imeActionLabel="Confirmar Contraseña"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="coto" />
+                    app:passwordToggleEnabled="true">
 
-            </android.support.design.widget.TextInputLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/txtPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_password"
+                        android:drawableLeft="@drawable/ic_password"
+                        android:hint="@string/prompt_password"
+                        android:imeActionId="6"
+                        android:imeActionLabel="@string/action_sign_in_short"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true" />
 
-                <Button
-                    android:id="@+id/btnInsertar"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="202dp"
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/borde_redondo"
-                    android:text="Registrarse"
-                    android:textAllCaps="false"
-                    android:textStyle="bold" />
-            </RelativeLayout>
+                    app:passwordToggleEnabled="true">
+
+                    <EditText
+                        android:id="@+id/txtConfirmarPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_confirmar_password"
+                        android:drawableLeft="@drawable/ic_confirmar_password"
+                        android:hint="Confirmar Contraseña"
+                        android:imeActionId="6"
+                        android:imeActionLabel="Confirmar Contraseña"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:passwordToggleEnabled="true">
+
+                    <Spinner
+                        android:id="@+id/spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                         />
+
+                </android.support.design.widget.TextInputLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <Button
+                        android:id="@+id/btnInsertar"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="202dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/borde_redondo"
+                        android:onClick="registrarMotero"
+                        android:text="Registrarse"
+                        android:textAllCaps="false"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+
+
 
             <TextView
                 android:id="@+id/link_to_register"

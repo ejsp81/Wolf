@@ -2,14 +2,18 @@ package com.example.wolf;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -64,12 +68,17 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.sql.SQLOutput;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.example.wolf.R.drawable.colorpn;
 
 
 public class MapsFragment extends Fragment
@@ -85,7 +94,7 @@ public class MapsFragment extends Fragment
 
     private GoogleMap mMap;
 
-    private static final String TAG = MapsFragment.class.getName();
+    public static final String TAG = "MapsFragment";
     double latitud = 0.0, longitud = 0.0;
     public LatLng ubicacion;
     String direccion, ciudad, ciudadn;
@@ -112,14 +121,23 @@ public class MapsFragment extends Fragment
     String miUbicacionF = "No medida";
     boolean rodando = false;
     public static final String CHANNEL_ID = "com.chikeandroid.tutsplustalerts.ANDROID";
+    public static final String YES_ACTION = null;
+    NotificationManagerCompat notificationManager = null;
 
 
-    public static MapsFragment newInstance() {
+    public static MapsFragment newInstance(Bundle arguments) {
         MapsFragment fragment = new MapsFragment();
+        if (arguments!=null){
+            fragment.setArguments(arguments);
+        }
         return fragment;
+    }
+    public MapsFragment(){
+
     }
 
 
+    //El fragmente va a cargar su layout, el cual debemos especificar
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -154,6 +172,43 @@ public class MapsFragment extends Fragment
         return view;
     }
 
+    //El fragment se ha adjuntado al Activity
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    //El Fragment ha sido creado
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+
+    //La vista de layout ha sido creada y ya está disponible
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    //La vista ha sido creada y cualquier configuración guardada está cargada
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    //El Activity que contiene el Fragment ha terminado su creación
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    /**El Fragment ha sido quitado de su Activity y ya no está disponible
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }*/
+
     public void iniciaLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -165,7 +220,7 @@ public class MapsFragment extends Fragment
                     if (location != null) {
                         latitud = location.getLatitude();
                         longitud = location.getLongitude();
-                        miubicacion=new LatLng(latitud,longitud);
+                        miubicacion = new LatLng(latitud, longitud);
                         if (longitud != 0.0 && !mAnimacamara) {
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitud, longitud), 15.0f));
                             mAnimacamara = true;
@@ -195,6 +250,7 @@ public class MapsFragment extends Fragment
         }
     }
 
+
     private void toggleLocationUpdates(boolean enable) {
         if (enable) {
             enableLocationUpdates();
@@ -202,29 +258,41 @@ public class MapsFragment extends Fragment
             System.out.println("----------------------------------------Comenze a rodar");
 
             // Create an explicit intent for an Activity in your app
-            Intent intent = new Intent(getActivity(), Registro.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Intent intent = new Intent(getActivity(), MenuPrincincipal.class);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, 0);
+            Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.colorpn);
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_email)
+                    .setSmallIcon(R.mipmap.ic_logo)
                     .setContentTitle("A rodar")
+                    .setLargeIcon(largeIcon)
                     .setContentText("Ahora estas participando de la rodada...")
                     .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText("Ahora estas participando de la rodadas..."))
+                            .setBigContentTitle("Rodada")
+                            .bigText("Estas Participando de la Rodada"))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
-                    .setVibrate(new long[] {100, 250, 100, 500})
-                    .setAutoCancel(false);
+                    .setVibrate(new long[]{100, 250, 100, 500})
+                    .setAutoCancel(false)
+                    .setOngoing(true)
+                    .setTicker("Alerta");
 
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+            notificationManager = NotificationManagerCompat.from(getContext());
 
 // notificationId is a unique int for each notification that you must define
             notificationManager.notify(1, builder.build());
+
         } else {
             disableLocationUpdates();
             rodando = false;
+            notificationManager.cancel(1);
         }
     }
+
 
     private void disableLocationUpdates() {
         if (mFusedLocationClient != null) {
@@ -334,17 +402,6 @@ public class MapsFragment extends Fragment
      */
 
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        System.out.println("se ha suspendido la aplicacion");
-        stopLocationUpdates();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     /**
      * Instanciar GoogleApiClient
@@ -492,8 +549,8 @@ public class MapsFragment extends Fragment
 
     private void updateUI(Location loc) {
         if (loc != null) {
-            latitud=loc.getLatitude();
-            longitud=loc.getLongitude();
+            latitud = loc.getLatitude();
+            longitud = loc.getLongitude();
             System.out.println("Latitud: " + String.valueOf(loc.getLatitude()));
             System.out.println("Longitud: " + String.valueOf(loc.getLongitude()));
         } else {
@@ -595,20 +652,19 @@ public class MapsFragment extends Fragment
         //markers.add(markerl);
 
         System.out.println("{{{{{{{{{{{{{{{{{{{{" + Varios.ubicacionList);
-
         LatLng ubic = null;
         if (Varios.ubicacionList != null) {
             for (Ubicacion ubicacion : Varios.ubicacionList) {
                 ubic = new LatLng(ubicacion.ubic_latitud, ubicacion.ubic_longitud);
-                markerOptions.title(Varios.usuarioList.get(cont).getUsua_primer_nombre() + " " + Varios.usuarioList.get(cont).getUsua_primer_apellido());
+                markerOptions.title(Varios.usuarioList.get(cont).getMote_nombre() + " " + Varios.usuarioList.get(cont).getMote_apellido());
 
                 markerOptions.position(ubic);
                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_moto));
-                markerOptions.snippet(muestraDistanci(ubic));
-                marcadores.put(ubicacion.getUbic_usua_id(), mMap.addMarker(markerOptions));
-                marcadoresTelefono.put(marcadores.get(ubicacion.getUbic_usua_id()).getId(), Varios.usuarioList.get(cont).getUsua_id() + "");
-                marcadoresAuxiliar.put(ubicacion.getUbic_usua_id(), Varios.usuarioList.get(cont).getUsua_primer_nombre() + " " + Varios.usuarioList.get(cont).getUsua_primer_apellido());
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + ubicacion.getUbic_usua_id());
+                markerOptions.snippet(ubicacion.getUbic_hora_conexion()+"-"+muestraDistanci(ubic));
+                marcadores.put(ubicacion.getUbic_mote_id(), mMap.addMarker(markerOptions));
+                marcadoresTelefono.put(marcadores.get(ubicacion.getUbic_mote_id()).getId(), Varios.usuarioList.get(cont).getMote_celular());
+                marcadoresAuxiliar.put(ubicacion.getUbic_mote_id(), Varios.usuarioList.get(cont).getMote_nombre() + " " + Varios.usuarioList.get(cont).getMote_apellido());
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + ubicacion.getUbic_mote_id());
                 //mMap.addMarker(new MarkerOptions().position(miubicacion)
                 //        .title(Varios.usuarioList.get(cont).usua_primer_nombre)
                 //        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)).snippet("Esta vaina que es"));
@@ -631,7 +687,7 @@ public class MapsFragment extends Fragment
             public void onInfoWindowClick(Marker marker) {
                 Intent i = new Intent(Intent.ACTION_CALL);
                 //Intent i = new Intent(Intent.ACTION_DIAL);
-                i.setData(Uri.parse("tel:3166034338"));
+                i.setData(Uri.parse("tel:" + marcadoresTelefono.get(marker.getId())));
                 startActivity(i);
                 Toast.makeText(
                         getActivity(),
@@ -671,11 +727,13 @@ public class MapsFragment extends Fragment
 
     public String muestraDistanci(LatLng dos) {
         if (rodando) {
-           return "Distancia: " + Varios.calculaDistancia(miubicacion, dos);
+            return "Distancia: " + Varios.calculaDistancia(miubicacion, dos);
         } else {
-           return "Distancia: " + miUbicacionF;
+            return "Distancia: " + miUbicacionF;
         }
     }
+
+
 
 
     class ActualizaUbicacion extends AsyncTask<String, String, String> {
@@ -709,15 +767,20 @@ public class MapsFragment extends Fragment
 
                     Thread.sleep(5000);
                     tb.llenaTreeMap("transaccion", "ingresaMapa");
-                    int usua=0;
-                    if (rodando){
-                        usua=Varios.usuarioLogueado.getUsua_id();
+                    int usua = 0;
+                    if (rodando) {
+                        usua = Varios.usuarioLogueado.getMot_id();
                         tb.llenaTreeMap("ubic_latitud", latitud);
                         tb.llenaTreeMap("ubic_longitud", longitud);
                         tb.llenaTreeMap("ubic_estado", 1);
+                        Date date = new Date();
+                        //Caso 1: obtener la hora y salida por pantalla con formato:
+                        DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+                        System.out.println("Hora: " + hourFormat.format(date));
+                        tb.llenaTreeMap("hora",hourFormat.format(date));
                     }
-                    System.out.println("xxxxxxxxxxxxxxxxxxxxxxxEstoy enviando el "+usua);
-                    tb.llenaTreeMap("ubic_usua_id", usua);
+                    System.out.println("xxxxxxxxxxxxxxxxxxxxxxxEstoy enviando el " + usua);
+                    tb.llenaTreeMap("ubic_mote_id", usua);
                     if (!tb.buildQueryURL(url, "POST")) {
                         System.out.println(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;fallo la conexion maps");
                         conexion = false;
@@ -728,13 +791,13 @@ public class MapsFragment extends Fragment
                                 String d = data.trim();
                                 if (!d.equals("no found")) {
                                     //JSONObject json = Varios.retornaJason(result);
-                                    System.out.println("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿"+Varios.retornaJason(data).optJSONArray("nuevo"));
+                                    System.out.println("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿" + Varios.retornaJason(data).optJSONArray("nuevo"));
                                     JSONArray jsonArray = Varios.retornaJason(data).optJSONArray("ubicacion");
                                     JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
                                     Gson gson = new Gson();
                                     Type typeUbi = new TypeToken<List<Ubicacion>>() {
                                     }.getType();
-                                    Type typeUsu = new TypeToken<List<Usuario>>() {
+                                    Type typeUsu = new TypeToken<List<Motero>>() {
                                     }.getType();
                                     Varios.ubicacionList = gson.fromJson(jsonArray.toString(), typeUbi);
                                     Varios.usuarioList = gson.fromJson(Varios.retornaJason(data).optJSONArray("usuario").toString(), typeUsu);
@@ -762,46 +825,41 @@ public class MapsFragment extends Fragment
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             int cont = 0;
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++Voy a actualizar");
             marcadoresAuxiliar = new TreeMap<Integer, String>();
             if (Varios.ubicacionList != null) {
                 for (Ubicacion ubicacion : Varios.ubicacionList) {
                     LatLng ubic = new LatLng(ubicacion.ubic_latitud, ubicacion.ubic_longitud);
-                    marcadores.get(ubicacion.getUbic_usua_id()).setVisible(true);
-                    marcadoresAuxiliar.put(ubicacion.getUbic_usua_id(), Varios.usuarioList.get(cont).getUsua_primer_nombre() + " " + Varios.usuarioList.get(cont).getUsua_primer_apellido());
-                    System.out.println("-------------- " + ubicacion.getUbic_usua_id());
-                    System.out.println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°" + marcadores.get(ubicacion.getUbic_usua_id()));
-                    if (marcadores.get(ubicacion.getUbic_usua_id()) == null) {
-                        System.out.println("############################################Encontré uno nuevo y lo voy a agregar");
-                        markerOptions.title(Varios.usuarioList.get(cont).getUsua_primer_nombre() + " " + Varios.usuarioList.get(cont).getUsua_primer_apellido());
-                        markerOptions.snippet(muestraDistanci(ubic));
+                    if (!rodando){
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ubic, 15.0f));
+                    }
+                    marcadores.get(ubicacion.getUbic_mote_id()).setVisible(true);
+                    marcadoresAuxiliar.put(ubicacion.getUbic_mote_id(), Varios.usuarioList.get(cont).getMote_nombre() + " " + Varios.usuarioList.get(cont).getMote_apellido());
+                    System.out.println("-------------- " + ubicacion.getUbic_mote_id());
+                    System.out.println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°" + marcadores.get(ubicacion.getUbic_mote_id()));
+                    if (marcadores.get(ubicacion.getUbic_mote_id()) == null) {
+                        markerOptions.title(Varios.usuarioList.get(cont).getMote_nombre() + " " + Varios.usuarioList.get(cont).getMote_apellido());
+                        markerOptions.snippet(ubicacion.getUbic_hora_conexion()+"-"+muestraDistanci(ubic));
                         markerOptions.position(ubic);
                         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_moto));
-                        marcadores.put(ubicacion.getUbic_usua_id(), mMap.addMarker(markerOptions));
+                        marcadores.put(ubicacion.getUbic_mote_id(), mMap.addMarker(markerOptions));
+                        marcadoresTelefono.put(marcadores.get(ubicacion.getUbic_mote_id()).getId(), Varios.usuarioList.get(cont).getMote_celular());
                     } else {
-                        marcadores.get(ubicacion.getUbic_usua_id()).setPosition(ubic);
-                        marcadores.get(ubicacion.getUbic_usua_id()).setSnippet(muestraDistanci(ubic));
-                        System.out.println(":::::::::::::::::::::::::::::::::::::::::::.Movi el mapa de: " + Varios.usuarioList.get(cont).getUsua_primer_nombre() + " " + Varios.usuarioList.get(cont).getUsua_primer_apellido());
+                        marcadores.get(ubicacion.getUbic_mote_id()).setPosition(ubic);
+                        marcadores.get(ubicacion.getUbic_mote_id()).setSnippet(ubicacion.getUbic_hora_conexion()+"-"+muestraDistanci(ubic));
                     }
-                    System.out.println("************************************  " + cont);
                     cont++;
                 }
                 cont = 0;
 
                 Iterator iterator = marcadores.keySet().iterator();//funcion del treemap para recorrerlo
                 Marker mk = null;
-                System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
                 while (iterator.hasNext()) {
                     Object clave = iterator.next();
-                    System.out.println("(((((((((" + clave + "===>" + marcadoresAuxiliar.get(clave));
                     if (marcadoresAuxiliar.get(clave) == null || marcadoresAuxiliar.get(clave).equals("")) {
-                        System.out.println("===================================> " + marcadores.get(clave).getTitle() + " salio de la rodada");
                         marcadores.get(clave).setVisible(false);
                         //marcadores.remove(clave);
                     }
                 }
-                System.out.println("///////////////////////////////////////////////////////////////////////////////////////////////////////");
-                System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++Ya actualice");
             } else {
                 System.out.println("No Hay participantes");
             }
@@ -845,13 +903,13 @@ public class MapsFragment extends Fragment
             try {
                 //local.getGps().lanzarLocalizacion();
                 tb.llenaTreeMap("transaccion", "ingresaMapa");
-                int usua=0;
-                if (rodando){
-                    usua=Varios.usuarioLogueado.getUsua_id();
+                int usua = 0;
+                if (rodando) {
+                    usua = Varios.usuarioLogueado.getMot_id();
                     tb.llenaTreeMap("ubic_latitud", latitud);
                     tb.llenaTreeMap("ubic_longitud", longitud);
                 }
-                tb.llenaTreeMap("ubic_usua_id", usua);
+                tb.llenaTreeMap("ubic_mote_id", usua);
                 if (!tb.buildQueryURL(url, "POST")) {
                     System.out.println(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;fallo la conexion maps");
                     conexion = false;
@@ -863,13 +921,15 @@ public class MapsFragment extends Fragment
                             if (!d.equals("no found")) {
                                 //JSONObject json = Varios.retornaJason(result);
                                 JSONArray jsonArray = Varios.retornaJason(data).optJSONArray("ubicacion");
+                                System.out.printf("..........................." + jsonArray.toString());
                                 JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
                                 Gson gson = new Gson();
                                 Type typeUbi = new TypeToken<List<Ubicacion>>() {
                                 }.getType();
-                                Type typeUsu = new TypeToken<List<Usuario>>() {
+                                Type typeUsu = new TypeToken<List<Motero>>() {
                                 }.getType();
                                 Varios.ubicacionList = gson.fromJson(jsonArray.toString(), typeUbi);
+                                System.out.println("##########" + Varios.ubicacionList);
                                 Varios.usuarioList = gson.fromJson(Varios.retornaJason(data).optJSONArray("usuario").toString(), typeUsu);
                                 for (Ubicacion ubicacion : Varios.ubicacionList) {
                                     Log.i("Ubicacion", ubicacion.ubic_latitud + "-" + ubicacion.ubic_longitud + "-");

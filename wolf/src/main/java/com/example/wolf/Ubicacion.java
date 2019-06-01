@@ -4,11 +4,11 @@ public class Ubicacion {
     public int ubic_id;
     public double ubic_latitud;
     public double ubic_longitud;
-    public double ubic_hora_conexion;
+    public String ubic_hora_conexion;
     public int ubic_estado;
     public int ubic_mote_id;
 
-    public Ubicacion(int ubic_id, double ubic_latitud, double ubic_longitud, double ubic_hora_conexion, int ubic_estado, int ubic_mote_id) {
+    public Ubicacion(int ubic_id, double ubic_latitud, double ubic_longitud, String ubic_hora_conexion, int ubic_estado, int ubic_mote_id) {
         this.ubic_id = ubic_id;
         this.ubic_latitud = ubic_latitud;
         this.ubic_longitud = ubic_longitud;
@@ -21,7 +21,7 @@ public class Ubicacion {
         this.ubic_id = 0;
         this.ubic_latitud = 0.0;
         this.ubic_longitud = 0.0;
-        this.ubic_hora_conexion = 0.0;
+        this.ubic_hora_conexion = "";
         this.ubic_estado = 0;
         this.ubic_mote_id = 0;
     }
@@ -50,11 +50,11 @@ public class Ubicacion {
         this.ubic_longitud = ubic_longitud;
     }
 
-    public double getUbic_hora_conexion() {
+    public String getUbic_hora_conexion() {
         return ubic_hora_conexion;
     }
 
-    public void setUbic_hora_conexion(double ubic_hora_conexion) {
+    public void setUbic_hora_conexion(String ubic_hora_conexion) {
         this.ubic_hora_conexion = ubic_hora_conexion;
     }
 

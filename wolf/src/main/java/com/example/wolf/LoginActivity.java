@@ -460,32 +460,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         JSONArray jsonArray = Varios.retornaJason(result).optJSONArray("user");
                         System.out.println(jsonArray);
                         JSONObject jsonArrayChild = jsonArray.getJSONObject(0);
-                        String pNombre = jsonArrayChild.optString("usua_primer_nombre");
-                        String sNombre = jsonArrayChild.optString("usua_segundo_nombre");
-                        String pApellido = jsonArrayChild.optString("usua_primer_apellido");
-                        String sApellido = jsonArrayChild.optString("usua_segundo_apellido");
-                        String email = jsonArrayChild.optString("usua_email");
-                        String id = jsonArrayChild.optString("usua_id");
-                        String pass = jsonArrayChild.optString("usua_password");
+                        String nombres = jsonArrayChild.optString("mote_nombre");
+                        String apellidos = jsonArrayChild.optString("mote_apellido");
+                        String email = jsonArrayChild.optString("mote_email");
+                        String password = jsonArrayChild.optString("mote_password");
+                        String lider = jsonArrayChild.optString("mote_lider");
+                        String id = jsonArrayChild.optString("mote_id");
+                        String celular = jsonArrayChild.optString("mote_celular");
 
-                        Varios.usuarioLogueado=new Usuario(Integer.parseInt(id),email,pNombre,sNombre,pApellido,sApellido,pass);
+                        Varios.usuarioLogueado=new Motero(Integer.parseInt(id),email,password,nombres,apellidos,celular,lider);
 
                         Gson gson = new Gson();
-                        Type type = new TypeToken<List<Usuario>>(){}.getType();
-                        List<Usuario> contactList = gson.fromJson(jsonArray.toString(),type);
-                        for (Usuario contact : contactList){
-                            Log.i("Usuario", contact.usua_id + "-" + contact.usua_email + "-" );
+                        Type type = new TypeToken<List<Motero>>(){}.getType();
+                        List<Motero> contactList = gson.fromJson(jsonArray.toString(),type);
+                        for (Motero contact : contactList){
+                            Log.i("Usuario", contact.getMot_id() + "-" + contact.getMote_email() + "-" );
                             System.out.println("------------------------------------------------------------------------------------------");
                             //LatLng miubicacion = new LatLng(contact.ubic_latitud, contact.ubic_longitud);
                             // mMap.addMarker(new MarkerOptions().position(miubicacion).title("Santiago de Cali"));
                         }
 
                         Toast.makeText(LoginActivity.this,
-                                "Bienvenido " + pNombre + " " + pApellido, Toast.LENGTH_LONG)
+                                "Bienvenido " + nombres + " " + apellidos, Toast.LENGTH_LONG)
                                 .show();
                         Intent intent = new Intent(LoginActivity.this, MenuPrincincipal.class);
-                        intent.putExtra("pNombre", pNombre);
-                        intent.putExtra("pApellido", pApellido);
+                        intent.putExtra("pNombre", nombres);
+                        intent.putExtra("pApellido", apellidos);
                         startActivity(intent);
                         System.out.println("se conecto");
                     }

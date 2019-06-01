@@ -2,6 +2,7 @@ package com.example.wolf;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -24,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -34,12 +36,17 @@ public class MenuPrincincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView txtNombre;
+    FragmentManager fm = getSupportFragmentManager();
+    Fragment mFragment=null;
+    MapsFragment mapsFragment = new MapsFragment();
+    RegistroFragment registroFragment = new RegistroFragment();
 
     static final int MY_PERMISSIONS_REQUEST_ACCES_FINE_LOCATION=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_princincipal);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,7 +96,7 @@ public class MenuPrincincipal extends AppCompatActivity
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+            //drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -123,13 +130,24 @@ public class MenuPrincincipal extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+
         // Creamos un nuevo Bundle
         //Una vez haz creado tu instancia de TestFragment y colocado el Bundle entre sus argumentos, usas el FragmentManager para iniciarla desde tu segunda actividad.
         //FragmentManager fm = getFragmentManager();
+        mFragment = getSupportFragmentManager().findFragmentById(R.id.escenario);
+        if (mFragment!=null){
+            //Toast.makeText(this, "El fragment pulsado fue "+mFragment.getTag(), Toast.LENGTH_LONG).show();
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+mFragment.getTag());
+        }
+
+
+
+        Fragment editor=null;
 
         if (id == R.id.nav_camera) {
 
         } else if (id == R.id.nav_gallery) {
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
             //fm.beginTransaction().replace(R.id.escenario,new MapsFragment()).commit();
             //local=new Localizacion(MenuPrincincipal.this);
@@ -144,20 +162,86 @@ public class MenuPrincincipal extends AppCompatActivity
             //args.putString("latitud", Varios.latitud+"");
             //args.putString("longitud", Varios.longitud+"");
             //args.putString("ciudad", ciudad);
+
+
+
+                // Supongamos que tu Fragment se llama TestFragment. Colocamos este nuevo Bundle como argumento en el fragmento.
+                editor=fm.findFragmentByTag("MapsFragment");
+            if (editor!=null){
+                Toast.makeText(this, "El fragment pulsado fue "+editor.getTag(), Toast.LENGTH_LONG).show();
+            }
+
+                if (editor==null){
+
+                    if (mFragment!=null){
+
+                        fragmentTransaction.hide(fm.findFragmentByTag(mFragment.getTag()));
+                    }
+                    fragmentTransaction.add(R.id.escenario,mapsFragment,MapsFragment.TAG).show(mapsFragment);
+                    fragmentTransaction.addToBackStack(null);
+                }else{
+                    if (editor.isHidden()){
+
+                        //Toast.makeText(this, "Esta oculto"+editor.getTag(), Toast.LENGTH_LONG).show();
+                    }
+                    System.out.println("////////////////////////////////////////////////////////////////");
+                    System.out.println("===========================>>"+mFragment.getClass().getName());
+                    fragmentTransaction.hide(fm.findFragmentByTag("RegistroFragment")).show(editor);
+                }
+
+                //newFragment.setArguments(args);
+
+
+                //fragmentTransaction.replace(R.id.escenario, mapsFragment);
+                fragmentTransaction.commit();
+
+
+        } else if (id == R.id.nav_slideshow) {
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+
+                // Supongamos que tu Fragment se llama TestFragment. Colocamos este nuevo Bundle como argumento en el fragmento.
+                editor=fm.findFragmentByTag("RegistroFragment");
+                if (editor!=null){
+                    Toast.makeText(this, "El fragment pulsado fue "+editor.getTag(), Toast.LENGTH_LONG).show();
+                }
+
+
+                if (editor==null){
+
+                    if (mFragment!=null){
+                        fragmentTransaction.hide(fm.findFragmentByTag(mFragment.getTag()));
+                    }
+                    fragmentTransaction.add(R.id.escenario,registroFragment,RegistroFragment.TAG).show(registroFragment);
+                    fragmentTransaction.addToBackStack(null);
+                }else{
+                    if (editor.isHidden()){
+                        //Toast.makeText(this, "Esta oculto "+editor.getTag(), Toast.LENGTH_LONG).show();
+                    }
+                    System.out.println("////////////////////////////////////////////////////////////////");
+                    System.out.println("===========================>>"+mFragment.getClass().getName());
+                    fragmentTransaction.hide(fm.findFragmentByTag("MapsFragment")).show(fm.findFragmentByTag("RegistroFragment"));
+                }
+
+                //newFragment.setArguments(args);
+
+
+                //fragmentTransaction.replace(R.id.escenario, mapsFragment);
+                fragmentTransaction.commit();
+
+            /**
             Fragment mFragment = getSupportFragmentManager().findFragmentById(R.id.escenario);
             if (mFragment instanceof MapsFragment) {
             }else{
                 FragmentManager fm = getSupportFragmentManager();
 
                 // Supongamos que tu Fragment se llama TestFragment. Colocamos este nuevo Bundle como argumento en el fragmento.
-                MapsFragment newFragment = new MapsFragment();
+
                 //newFragment.setArguments(args);
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.replace(R.id.escenario, newFragment);
                 fragmentTransaction.commit();
-            }
-
-        } else if (id == R.id.nav_slideshow) {
+            }*/
 
         } else if (id == R.id.nav_manage) {
 
